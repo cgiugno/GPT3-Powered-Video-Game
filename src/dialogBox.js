@@ -1,5 +1,4 @@
 import React from 'react';
-import dialogURL from './uipack_fixed/PNG/yellow_panel.png';
 import { dialogStyle, dialogTextStyle } from './style.js';
 
 

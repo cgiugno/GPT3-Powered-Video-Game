@@ -1,15 +1,12 @@
 import React from 'react';
-import { Configuration, OpenAIApi } from "openai";
 import { useEffect, useState } from 'react';
-import { spiderNPC, wizardNPC, ghostNPC, SpecNPC, Conv } from './dialogTrees.js';
+import { spiderNPC, wizardNPC, ghostNPC} from './dialogTrees.js';
 import { Interface } from "./interface.js";
 
-const configuration = new Configuration({
-    organization: "org-lCoICPkqEqYQHQq9xT7TXP53",
-    apiKey: process.env.REACT_APP_API_KEY,
-});
-
-const openai = new OpenAIApi(configuration);
+// const configuration = new Configuration({
+//     organization: "org-lCoICPkqEqYQHQq9xT7TXP53",
+//     apiKey: process.env.REACT_APP_API_KEY,
+// });
 
 const npcPrompts = ["Say hello in a bright cheery way.", "Say hello in a angry way.", 'Say hello in a goofy, whimsical way.'];
 const npcs = [spiderNPC, wizardNPC, ghostNPC];
