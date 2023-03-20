@@ -1,0 +1,22 @@
+@font-face {
+    font-family: 'KenneyPixel';
+    src: local('KenneyPixel'),
+        url('./KenneyPixel.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'KenneyHighSquare';
+    src: local('KenneyHighSquare'),
+        url('./Kenney\ High\ Square.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'KenneyFutureNarrow';
+    src: local('KenneyFutureNarrow'),
+        url('./Kenney\ Future\ Narrow.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
