@@ -2,6 +2,7 @@ export class SpecNPC {
     constructor() {
         this.name = "";
         this.desc = "";
+        this.defaultText = "";
         this.currConv = 0;
         this.numTimesConversed = 0;
         this.conds = [];
@@ -21,6 +22,14 @@ export class SpecNPC {
     }
     getDesc() {
         return this.desc;
+    }
+
+    setDefault(newDefault) {
+        this.defaultText = newDefault;
+    }
+
+    getDefault() {
+        return this.defaultText;
     }
     
     setCurrConv(newCurrConv) {
@@ -166,6 +175,7 @@ export class Conv {
 export var spiderNPC = new SpecNPC();
 spiderNPC.setName('Murmur');
 spiderNPC.setDesc('Pretend you are a friendly tarantula named Murmur who lives in a small mountain town named \'Tailwind\', and likes to see newcomers.');
+spiderNPC.setDefault("Hope you're continuing to enjoy your time in Tailwind!");
 spiderNPC.setConds([false]);
 
 
@@ -180,6 +190,7 @@ spiderNPC.addConversation(helloConv);
 export var wizardNPC = new SpecNPC();
 wizardNPC.setName('Naenaerius');
 wizardNPC.setDesc('Pretend you are a grumpy yet mysterious old wizard named \'Naenaerius\' who lives in a small shack in a small mountain town named \'Tailwind\'. You don\'t like newcomers to the town.');
+wizardNPC.setDefault("Oh, you're still in Tailwind, are you?");
 wizardNPC.setConds([false, false]);
 
 export var wizHello = new Conv();
@@ -194,6 +205,7 @@ wizardNPC.addConversation(wizHello);
 export var ghostNPC = new SpecNPC();
 ghostNPC.setName('Spoopy');
 ghostNPC.setDesc('Pretend you are a goofy, whimsical ghost that talks in an old-fashioned style. Your name is \'Spoopy\' and you haunt the house on the northwestern side of small mountain town \'Tailwind\'.');
+ghostNPC.setDefault("Boo! Haha, just kidding!");
 ghostNPC.setConds([false]);
 
 export var ghostHello = new Conv();

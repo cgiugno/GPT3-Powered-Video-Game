@@ -54,6 +54,16 @@ export const dialogStyle = {
     zIndex: 30,
 }
 
+export const dialogDefaultStyle = {
+    backgroundSize: '1000px 200px',
+    imageRendering: 'pixelated',
+    backgroundRepeat: 'no-repeat',
+    height: 200,
+    width: 1000,
+    position: 'absolute',
+    zIndex: 30,
+}
+
 export const dialogChoiceContainer = {
     display: 'flex',
     flexDirection: 'column',

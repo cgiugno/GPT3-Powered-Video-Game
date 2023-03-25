@@ -213,7 +213,12 @@ export class Interface extends React.Component {
                                     })
                                 }
                                 {
-                                    ((this.props.dialogOn !== 0) && (index === 3) && <DialogBox npcID = { this.props.dialogOn } npcDialog = {this.props.result} npcDialogColor = {npcTextColor[this.props.dialogOn - 1]} npcChoices = {this.props.dialogChoices} onDialogClick = { this.props.onDialogClick }/>)
+                                    ((this.props.dialogOn !== 0) && (index === 3) && <DialogBox 
+                                        npcID = { this.props.dialogOn } 
+                                        npcDialog = {this.props.result} 
+                                        npcDialogColor = {npcTextColor[this.props.dialogOn - 1]} 
+                                        npcChoices = {this.props.dialogChoices} 
+                                        onDialogClick = { this.props.onDialogClick }/>)
                                 }
                             </div>
 

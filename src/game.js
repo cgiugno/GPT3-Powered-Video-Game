@@ -221,12 +221,25 @@ export function Game(props) {
             const adjToNPC = isAdjNPC(playerCoord);
             if (adjToNPC !== 0) {
                 const preDialog = isDialog;
+                // Spacebar if is speaking with NPC.
                 if (preDialog !== 0) {
                     setIsDialog(0);
                     setResultDialog('');
+                    setDialogChoices(['', '']);
+                // Spacebar if is speaking to NPC.
                 } else {
-                    setIsDialog(adjToNPC);
-                    getDialog(adjToNPC);
+                    const currNPC = npcs[adjToNPC - 1];
+                    console.log("NPC: " + currNPC);
+                    console.log("Conversation: " + currNPC.getCurrConversation());
+                    
+                    if (currNPC.getCurrConversation().getFinished() === true) {
+                        setIsDialog(adjToNPC);
+                        setResultDialog(currNPC.getDefault());
+                        setDialogChoices(null);
+                    } else {
+                        setIsDialog(adjToNPC);
+                        getDialog(adjToNPC);
+                    }
                 }
             }
         }
