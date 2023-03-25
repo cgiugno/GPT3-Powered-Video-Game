@@ -189,15 +189,16 @@ export class Interface extends React.Component {
                                     item.map((item2, index2) => {
                                         const playerY = this.props.playerPos[1] - 1 +  index;
                                         const playerX = this.props.playerPos[0] - 2 + index2;
-                                        console.log(`IND: ${index2}, ${index}`);
-                                        console.log(`POS: ${playerX}, ${playerY}`);
-                                        console.log(`PLAYER? ${((index === 1) && (index2 === 2))}`);
-                                        if (withinCurrMap(playerX, playerY)) {
-                                            console.log(`NPC: ${this.props.npcPos[playerY][playerX]}`);
-                                        } else {
-                                            console.log('NPC outside range.');
-                                        }
-                                        console.log("");
+
+                                        // console.log(`IND: ${index2}, ${index}`);
+                                        // console.log(`POS: ${playerX}, ${playerY}`);
+                                        // console.log(`PLAYER? ${((index === 1) && (index2 === 2))}`);
+                                        // if (withinCurrMap(playerX, playerY)) {
+                                        //     console.log(`NPC: ${this.props.npcPos[playerY][playerX]}`);
+                                        // } else {
+                                        //     console.log('NPC outside range.');
+                                        // }
+                                        // console.log("");
 
                                         return <div style={box} key={"child" + index + "." + index2}>
                                             {((index === 1) && (index2 === 2)) && <Player playerSrc={greyRatPlayer} stopAnim={this.props.dialogOn}/>}
@@ -212,7 +213,7 @@ export class Interface extends React.Component {
                                     })
                                 }
                                 {
-                                    ((this.props.dialogOn !== 0) && (index === 3) && <DialogBox npcID = { this.props.dialogOn } npcDialog = {this.props.result} npcDialogColor = {npcTextColor[this.props.dialogOn - 1]}/>)
+                                    ((this.props.dialogOn !== 0) && (index === 3) && <DialogBox npcID = { this.props.dialogOn } npcDialog = {this.props.result} npcDialogColor = {npcTextColor[this.props.dialogOn - 1]} npcChoices = {this.props.dialogChoices} onDialogClick = { this.props.onDialogClick }/>)
                                 }
                             </div>
 

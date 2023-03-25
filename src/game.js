@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { spiderNPC, wizardNPC, ghostNPC} from './dialogTrees.js';
+import { spiderNPC, wizardNPC, ghostNPC } from './dialogTrees.js';
 import { Interface } from "./interface.js";
 
 // const configuration = new Configuration({
@@ -16,6 +16,7 @@ export function Game(props) {
     const [playerCoord, setPlayerCoord] = useState([4, 7]);
     const [isDialog, setIsDialog] = useState(0);
     const [resultDialog, setResultDialog] = useState('');
+    const [dialogChoices, setDialogChoices] = useState([]);
     const [npcMap, setNpcMap] = useState([
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -42,37 +43,61 @@ export function Game(props) {
     ]);
 
     async function getDialog(npcNum) {
-        if (testing) {
-            const currentConveration = npcs[npcNum - 1].getCurrConv();
-            console.log("Conversant: " + npcs[npcNum - 1].getName());
-            console.log("Index of Conversation: " + npcs[npcNum - 1].getCurrConv());
-            setResultDialog(npcs[npcNum - 1].getConversationInd(currentConveration).getCurrentTurnPrompt());
-        } else {
-            console.log(npcNum);
-            try {
-                const dialogRequest = {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + String(process.env.REACT_APP_API_KEY),
-                    },
-                    body: JSON.stringify({
-                        'model': 'text-davinci-003',
-                        'temperature': 0.7,
-                        'max_tokens': 50,
-                        'prompt': npcPrompts[npcNum - 1],
-                    })
-                };
-                const response = await fetch('https://api.openai.com/v1/completions', dialogRequest);
-                const data = await response.json();
-                console.log(data);
-                setResultDialog(data.choices[0].text);
-            } catch (error) {
-                console.log("ERROR OCCURRED!");
-                console.error(error);
-                alert(console.message);
+        console.log("Conversant: " + npcs[npcNum - 1].getName());
+        console.log("Index of Conversation: " + npcs[npcNum - 1].getCurrConv());
+        
+        if (npcs[npcNum - 1].getCurrConversation().getIndex() !== -1) {
+            if (testing) {
+                const currentConveration = npcs[npcNum - 1].getCurrConv();
+                setResultDialog(npcs[npcNum - 1].getConversationInd(currentConveration).getCurrentTurnPrompt());
+            } else {
+                console.log(npcNum);
+                const currNPC = npcs[npcNum - 1];
+                const testPrompt = currNPC.getDesc() + currNPC.getCurrConversation().getCurrentTurnPrompt();
+                try {
+                    const dialogRequest = {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + String(process.env.REACT_APP_API_KEY),
+                        },
+                        body: JSON.stringify({
+                            'model': 'text-davinci-003',
+                            'temperature': 0.7,
+                            'max_tokens': 50,
+                            'prompt': testPrompt,
+                        })
+                    };
+                    const response = await fetch('https://api.openai.com/v1/completions', dialogRequest);
+                    const data = await response.json();
+                    console.log(data);
+                    setResultDialog(data.choices[0].text);
+                    console.log("Choices: " + currNPC.getCurrConversation().getCurrentTurnChoices());
+                    setDialogChoices(currNPC.getCurrConversation().getCurrentTurnChoices());
+                } catch (error) {
+                    console.log("ERROR OCCURRED!");
+                    console.error(error);
+                    alert(console.message);
+                }
             }
+        } else {
+            setIsDialog(0);
+            setResultDialog('');
         }
+    }
+
+    const onDialogClick = (dialogChosen) => {
+        if (isDialog > -1) {
+            const currNPC = npcs[isDialog - 1];
+            console.log("Current Conversation: " + JSON.stringify(currNPC.getCurrConversation()));
+            console.log("Current Conversation Index: " + currNPC.getCurrConversation().getIndex());
+            currNPC.getCurrConversation().traverseConv(dialogChosen);
+
+            console.log("New Conversation: " + JSON.stringify(currNPC.getCurrConversation()));
+
+            getDialog(isDialog);
+        }
+
     }
 
 
@@ -207,16 +232,16 @@ export function Game(props) {
     }
 
     useEffect(() => {
-        console.log("Pre Move: [" + playerCoord[0] + ", " + playerCoord[1] + "]");
+        // console.log("Pre Move: [" + playerCoord[0] + ", " + playerCoord[1] + "]");
         document.addEventListener('keydown', handleKeydown);
         return () => {
             document.removeEventListener('keydown', handleKeydown);
-            console.log("Moved: [" + playerCoord[0] + ", " + playerCoord[1] + "]");
-            console.log('Dialog: ' + isDialog);
+            // console.log("Moved: [" + playerCoord[0] + ", " + playerCoord[1] + "]");
+            // console.log('Dialog: ' + isDialog);
         }
     }, [playerCoord, isDialog]);
 
     return (
-        <Interface playerPos={playerCoord} npcPos={npcMap} objPos={objMap} dialogOn={isDialog} result={(resultDialog !== '') ? resultDialog : '...'} />
+        <Interface playerPos={playerCoord} npcPos={npcMap} objPos={objMap} dialogOn={isDialog} result={(resultDialog !== '') ? resultDialog : '...'} dialogChoices={dialogChoices} onDialogClick={onDialogClick} />
     );
 }

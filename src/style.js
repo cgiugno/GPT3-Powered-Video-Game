@@ -45,19 +45,36 @@ export const objectStyle = {
 }
 
 export const dialogStyle = {
-    backgroundSize: '1000px 200px',
+    backgroundSize: '600px 200px',
     imageRendering: 'pixelated',
     backgroundRepeat: 'no-repeat',
     height: 200,
-    width: 1000,
+    width: 600,
     position: 'absolute',
-    zIndex: 20,
+    zIndex: 30,
+}
+
+export const dialogChoiceContainer = {
+    display: 'flex',
+    flexDirection: 'column',
+    height: 200,
+    width: 400,
+    position: 'static',
+    marginLeft: '600px',
+}
+
+export const dialogChoiceStyle = {
+    backgroundSize: '400px 100px',
+    imageRendering: 'pixelated',
+    backgroundRepeat: 'no-repeat',
+    height: 100,
+    width: 400,
 }
 
 export const dialogTextStyle = {
     margin: 50,
     fontSize: 30,
-    width: 900,
+    width: 500,
     height: 100,
     position: 'absolute',
     fontFamily: 'KenneyPixel',
@@ -68,6 +85,15 @@ export const csBox = {
     width: 1000,
     display: 'flex'
 };
+
+export const dialogOutline = {
+    position: 'absolute',
+    zIndex: 10,
+    height: 200,
+    width: 1000,
+    display: 'flex',
+    flexDirection: 'horizontal',
+}
 
 export const box = {
     height: 200,
