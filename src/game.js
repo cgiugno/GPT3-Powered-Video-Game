@@ -83,6 +83,7 @@ export function Game(props) {
         } else {
             setIsDialog(0);
             setResultDialog('');
+            setDialogChoices(['', '']);
         }
     }
 

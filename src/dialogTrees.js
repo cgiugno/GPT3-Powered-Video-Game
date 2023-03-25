@@ -200,6 +200,6 @@ export var ghostHello = new Conv();
 ghostHello.setIndex(0);
 ghostHello.addTurn('Say hello in a whimsical fashion in the style of Lewis Carroll\'s Alice in Wonderland.', "Hello back!", 1, [], [true], "A ghost?!", 2, [], [true]);
 ghostHello.addTurn('Paraphrase \'You are now in a town called \'Tailwind\'.\' in a whimsical fashion reminiscent of Lewis Carroll\'s Alice in Wonderland.', "Oh, sounds good.", -1, [], [true], "", -1, [], [true]);
-ghostHello.addTurn('Paraphrase \'I am a ghost that haunts the house on the north side of town\'.\' in a whimsical fashion reminiscent of Lewis Carroll\'s Alice in Wonderland.', "Oh...Well, good to meet you then." -1, [], [true], "", -1, [], [true]);
+ghostHello.addTurn('Paraphrase \'I am a ghost that haunts the house on the north side of town\'.\' in a whimsical fashion reminiscent of Lewis Carroll\'s Alice in Wonderland.', 'Oh...Well, good to meet you then.', -1, [], [true], "", -1, [], [true]);
 
 ghostNPC.addConversation(ghostHello);
