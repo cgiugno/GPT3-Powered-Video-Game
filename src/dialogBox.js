@@ -6,12 +6,13 @@ import { dialogStyle, dialogTextStyle, dialogChoiceContainer, dialogChoiceStyle,
 import yellowDialog from './uipack_fixed/PNG/yellow_button00.png';
 import redDialog from './uipack_fixed/PNG/red_button00.png';
 import greyDialog from './uipack_fixed/PNG/grey_button00.png';
+import blueDialog from "./uipack_fixed/PNG/blue_button00.png";
 
 import yellowDialogHover from './uipack_fixed/PNG/yellow_button01.png';
 import redDialogHover from './uipack_fixed/PNG/red_button01.png';
 import greyDialogHover from './uipack_fixed/PNG/grey_button01.png';
 
-const npcDialog = [yellowDialog, redDialog, greyDialog];
+const npcDialog = [yellowDialog, redDialog, greyDialog, blueDialog];
 const npcDialogHover = [yellowDialogHover, redDialogHover, greyDialogHover];
 
 

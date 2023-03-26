@@ -2,19 +2,42 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { spiderNPC, wizardNPC, ghostNPC } from './dialogTrees.js';
 import { Interface } from "./interface.js";
+import { beeHive, tallGreenTree, smallyellowtree, house } from './ObjectLogic/objsInGame.js';
 
 // const configuration = new Configuration({
 //     organization: "org-lCoICPkqEqYQHQq9xT7TXP53",
 //     apiKey: process.env.REACT_APP_API_KEY,
 // });
 
-const npcPrompts = ["Say hello in a bright cheery way.", "Say hello in a angry way.", 'Say hello in a goofy, whimsical way.'];
 const npcs = [spiderNPC, wizardNPC, ghostNPC];
+const objs = [
+    house.getObjFromSub(7), // 1                // 0
+    house.getObjFromSub(8),  // 2               // 1 
+    house.getObjFromSub(10), // 3               // 2
+    house.getObjFromSub(4), // 4                // 3
+    house.getObjFromSub(5), // 5                // 4
+    house.getObjFromSub(6), // 6                // 5
+    house.getObjFromSub(0), // 7                // 6
+    house.getObjFromSub(1), // 8                // 7
+    house.getObjFromSub(3), // 9                // 8
+    house.getObjFromSub(2), // 10               // 9
+    null, // 11                                 // 10
+    house.getObjFromSub(9), //12                // 11
+    null, // 13                                 // 12
+    tallGreenTree.getObjFromSub(0), // 14       // 13
+    tallGreenTree.getObjFromSub(1), // 15       // 14
+    null, // 16                                 // 15
+    null, // 17                                 // 16
+    null, // 18                                 // 17
+    smallyellowtree, // 19                      // 18
+    beeHive, // 20                              // 19
+]
 const testing = false;
 
 export function Game(props) {
     const [playerCoord, setPlayerCoord] = useState([4, 7]);
     const [isDialog, setIsDialog] = useState(0);
+    const [isObjDesc, setIsObjDesc] = useState(0);
     const [resultDialog, setResultDialog] = useState('');
     const [dialogChoices, setDialogChoices] = useState([]);
     const [npcMap, setNpcMap] = useState([
@@ -49,7 +72,11 @@ export function Game(props) {
         if (npcs[npcNum - 1].getCurrConversation().getIndex() !== -1) {
             if (testing) {
                 const currentConveration = npcs[npcNum - 1].getCurrConv();
+                
                 setResultDialog(npcs[npcNum - 1].getConversationInd(currentConveration).getCurrentTurnPrompt());
+                
+                setDialogChoices(npcs[npcNum - 1].getCurrConversation().getCurrentTurnChoices());
+
             } else {
                 console.log(npcNum);
                 const currNPC = npcs[npcNum - 1];
@@ -84,6 +111,43 @@ export function Game(props) {
             setIsDialog(0);
             setResultDialog('');
             setDialogChoices(['', '']);
+        }
+    }
+
+    async function getObjDesc(objNum) {
+        console.log("Object Index: " + (objNum - 1));
+        console.log("Object: " + objs[objNum - 1]);
+        console.log("Object Name: " + objs[objNum - 1].getName());
+        if (testing) {
+            setResultDialog(objs[objNum - 1].getDesc());
+            setDialogChoices(null)
+        } else {
+            const currObj = objs[objNum - 1];
+            const objPrompt = currObj.getDesc()
+            try {
+                const dialogRequest = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + String(process.env.REACT_APP_API_KEY),
+                    },
+                    body: JSON.stringify({
+                        'model': 'text-davinci-003',
+                        'temperature': 0.7,
+                        'max_tokens': 50,
+                        'prompt': objPrompt,
+                    })
+                };
+                const response = await fetch('https://api.openai.com/v1/completions', dialogRequest);
+                const data = await response.json();
+                console.log("Object Description: " + data);
+                setResultDialog(data.choices[0].text);
+                setDialogChoices(null);
+            } catch (error) {
+                console.log("ERROR OCCURRED!");
+                console.error(error);
+                alert(console.message);
+            }
         }
     }
 
@@ -136,12 +200,15 @@ export function Game(props) {
     }
 
     const checkForObj = (coordsToCheck) => {
-        var objInMovePos = false;
+        var objInMovePos = 0;
         // console.log(coordsToCheck[0]);
         // console.log(coordsToCheck[1]);
         // console.log(npcMap);
-        if (objMap[coordsToCheck[1]][coordsToCheck[0]] !== 0) {
-            objInMovePos = true;
+        const objCoord = objMap[coordsToCheck[1]][coordsToCheck[0]];
+        console.log("Coordinate: " + objMap[coordsToCheck[1]][coordsToCheck[0]])
+        console.log("Object: " + JSON.stringify(objs[objCoord - 1]));
+        if ((objCoord !== 0) && (objs[objCoord - 1].getInteractable() === true)) {
+            objInMovePos = objMap[coordsToCheck[1]][coordsToCheck[0]];
         }
         return objInMovePos;
     }
@@ -160,6 +227,21 @@ export function Game(props) {
         return adjNPC;
     }
 
+    const isAdjObj = (coordsToCheck) => {
+        var adjObj = 0;
+        if ((coordsToCheck[1] + 1 <= 9) && (objMap[coordsToCheck[1] + 1][coordsToCheck[0]] !== 0)) {
+            adjObj = objMap[coordsToCheck[1] + 1][coordsToCheck[0]];
+        } else if ((coordsToCheck[1] - 1 >= 0) && (objMap[coordsToCheck[1] - 1][coordsToCheck[0]] !== 0)) {
+            adjObj = objMap[coordsToCheck[1] - 1][coordsToCheck[0]];
+        } else if ((coordsToCheck[0] + 1 <= 9) && (objMap[coordsToCheck[1]][coordsToCheck[0] + 1] !== 0)) {
+            adjObj = objMap[coordsToCheck[1]][coordsToCheck[0] + 1];
+        } else if ((coordsToCheck[0] - 1 >= 0) && (objMap[coordsToCheck[1]][coordsToCheck[0] - 1] !== 0)) {
+            adjObj = objMap[coordsToCheck[1]][coordsToCheck[0] - 1];
+        }
+        console.log("Adjacent to Object? " + adjObj);
+        return adjObj;
+    }
+
     const handleKeydown = (event) => {
         console.log(event.key);
 
@@ -171,7 +253,7 @@ export function Game(props) {
                     const preMove = playerCoord;
                     const npcChecked = checkForNPC([preMove[0], (preMove[1] - 1)]);
                     const objChecked = checkForObj([preMove[0], (preMove[1] - 1)]);
-                    if ((npcChecked === false) && (objChecked === false)) {
+                    if ((npcChecked === false) && (objChecked === 0)) {
                         setPlayerCoord([preMove[0], (preMove[1] - 1)]);
                     }
                 }
@@ -184,7 +266,7 @@ export function Game(props) {
                     const npcChecked = checkForNPC([preMove[0], (preMove[1] + 1)]);
                     const objChecked = checkForObj([preMove[0], (preMove[1] + 1)]);
 
-                    if ((npcChecked === false) && (objChecked === false)) {
+                    if ((npcChecked === false) && (objChecked === 0)) {
                         setPlayerCoord([preMove[0], (preMove[1] + 1)]);
                     }
                 }
@@ -197,7 +279,7 @@ export function Game(props) {
                     const npcChecked = checkForNPC([(preMove[0] - 1), (preMove[1])]);
                     const objChecked = checkForObj([(preMove[0] - 1), (preMove[1])]);
 
-                    if ((npcChecked === false) && (objChecked === false)) {
+                    if ((npcChecked === false) && (objChecked === 0)) {
                         setPlayerCoord([(preMove[0] - 1), (preMove[1])]);
                     }
                 }
@@ -210,7 +292,7 @@ export function Game(props) {
                     const npcChecked = checkForNPC([(preMove[0] + 1), (preMove[1])]);
                     const objChecked = checkForObj([(preMove[0] + 1), (preMove[1])]);
 
-                    if ((npcChecked === false) && (objChecked === false)) {
+                    if ((npcChecked === false) && (objChecked === 0)) {
                         setPlayerCoord([(preMove[0] + 1), (preMove[1])]);
                     }
                 }
@@ -219,6 +301,7 @@ export function Game(props) {
         if (event.key === ' ') {
             console.log("Space key pressed.");
             const adjToNPC = isAdjNPC(playerCoord);
+            const adjToObj = isAdjObj(playerCoord);
             if (adjToNPC !== 0) {
                 const preDialog = isDialog;
                 // Spacebar if is speaking with NPC.
@@ -241,6 +324,21 @@ export function Game(props) {
                         getDialog(adjToNPC);
                     }
                 }
+            } else if (adjToObj !== 0) {
+                const preObjDesc = isObjDesc;
+                console.log("Currently speaking with...? " + isObjDesc);
+                console.log("Am adjacent to... " + adjToObj);
+                if (preObjDesc !== 0) {
+                    setIsObjDesc(0);
+                    setResultDialog('');
+                    setDialogChoices(null);
+                } else {
+                    console.log("Speaking to Obj.");
+                    setIsObjDesc(adjToObj);
+                    console.log("And again " + isObjDesc);
+                    getObjDesc(adjToObj);
+                    setDialogChoices(null);
+                }
             }
         }
     }
@@ -253,9 +351,18 @@ export function Game(props) {
             // console.log("Moved: [" + playerCoord[0] + ", " + playerCoord[1] + "]");
             // console.log('Dialog: ' + isDialog);
         }
-    }, [playerCoord, isDialog]);
+    }, [playerCoord, isDialog, isObjDesc]);
 
     return (
-        <Interface playerPos={playerCoord} npcPos={npcMap} objPos={objMap} dialogOn={isDialog} result={(resultDialog !== '') ? resultDialog : '...'} dialogChoices={dialogChoices} onDialogClick={onDialogClick} />
+        <Interface 
+            playerPos={playerCoord} 
+            npcPos={npcMap} 
+            objPos={objMap} 
+            dialogOn={isDialog} 
+            objDescOn={isObjDesc}
+            result={(resultDialog !== '') ? resultDialog : '...'} 
+            dialogChoices={dialogChoices} 
+            onDialogClick={onDialogClick} 
+        />
     );
 }
