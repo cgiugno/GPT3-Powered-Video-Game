@@ -19,6 +19,18 @@ export const playerStyle = {
     position: 'absolute',
 
 }
+export const rotate0Deg = {
+    imageOrientation: '0deg',
+}
+export const rotate90Deg = {
+    imageOrientation: '90deg',
+}
+export const rotate180Deg = {
+    imageOrientation: '180deg',
+}
+export const rotate270Deg = {
+    imageOrientation: '270deg',
+}
 
 export const npcStyle = {
     backgroundSize: 'cover',

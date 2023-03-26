@@ -1,5 +1,5 @@
 import React from 'react';
-import {playerStyle, charAnimStyle} from './style.js';
+import {playerStyle, charAnimStyle, rotate180Deg} from './style.js';
 
 
 
@@ -8,9 +8,9 @@ export class Player extends React.Component {
         var playerSty = {};
         // console.log("Stop Animation?" + this.props.stopAnim);
         if (this.props.stopAnim !== 0) {
-            playerSty = playerStyle;
+            Object.assign(playerSty, playerStyle, { rotate: `${this.props.playerOrientation}deg`});
         } else {
-            Object.assign(playerSty, playerStyle, charAnimStyle) 
+            Object.assign(playerSty, playerStyle, { rotate: `${this.props.playerOrientation}deg`}, charAnimStyle) 
         }
         return (
             <img style= { playerSty } src = { this.props.playerSrc }/>

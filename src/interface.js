@@ -158,7 +158,7 @@ export class Interface extends React.Component {
         // console.log("Beehive IMAGE: " + JSON.stringify(objArray[this.props.objPos[8][9].getImgURL() - 1]));
         return (
             <div>
-                <h1 style={headerStyle}>You are now a normal rat.</h1>
+                <h1 style={headerStyle}>A rat pun.</h1>
                 <div style={screen}>
                     {
                         this.state.boardState.map((item, index) => {
@@ -174,7 +174,7 @@ export class Interface extends React.Component {
                                             style={box} 
                                             key={"child" + index + "." + index2}>
                                             {((index === 1) && (index2 === 2)) && 
-                                                <Player playerSrc={greyRatPlayer} stopAnim={this.props.dialogOn}/>}
+                                                <Player playerSrc={greyRatPlayer} playerOrientation={this.props.playerOri} stopAnim={this.props.dialogOn}/>}
                                             
                                             {((withinCurrMap(playerY, playerX)) && (this.props.npcPos[playerY][playerX] !== 0)) && 
                                                 <NPC npcSrc = {npcArray[this.props.npcPos[playerY][playerX] - 1] }/>}

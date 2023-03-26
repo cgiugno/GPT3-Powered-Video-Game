@@ -36,6 +36,11 @@ const testing = false;
 
 export function Game(props) {
     const [playerCoord, setPlayerCoord] = useState([4, 7]);
+    const [playerOrientation, setPlayerOrientation] = useState(0);  
+    // 0 = North
+    // 90 = East
+    // 180 = South
+    // 270 = West
     const [isDialog, setIsDialog] = useState(0);
     const [isObjDesc, setIsObjDesc] = useState(0);
     const [resultDialog, setResultDialog] = useState('');
@@ -188,13 +193,36 @@ export function Game(props) {
     //     }
     // }
 
+    const playerFacing = (currCoords, currOrientation) => {
+        var coordsToCheck = currCoords;
+        switch(currOrientation) {
+            case 0:
+                coordsToCheck = [currCoords[0], currCoords[1] + 1];
+                break;
+            case 90:
+                coordsToCheck = [currCoords[0] - 1, currCoords[1]];
+                break;
+            case 180:
+                coordsToCheck = [currCoords[0], currCoords[1] - 1];
+                break;
+            case 270:
+                coordsToCheck = [currCoords[0] + 1, currCoords[1]];
+                break;
+        }
+
+        return coordsToCheck;
+    }
+
     const checkForNPC = (coordsToCheck) => {
-        var npcInMovePos = false;
+        var npcInMovePos = 0;
         // console.log(coordsToCheck[0]);
         // console.log(coordsToCheck[1]);
         // console.log(npcMap);
+
+        console.log("Coordinate: " + npcMap[coordsToCheck[1]][coordsToCheck[0]])
+
         if (npcMap[coordsToCheck[1]][coordsToCheck[0]] !== 0) {
-            npcInMovePos = true;
+            npcInMovePos = npcMap[coordsToCheck[1]][coordsToCheck[0]];
         }
         return npcInMovePos;
     }
@@ -244,64 +272,97 @@ export function Game(props) {
 
     const handleKeydown = (event) => {
         console.log(event.key);
+        console.log("Player Orientation? " + playerOrientation);
 
         if (isDialog === 0) {
             if (event.key === 'w') {
                 console.log("W key pressed.");
 
-                if ((playerCoord[1] > 0) && (playerCoord[1] <= 9)) {
-                    const preMove = playerCoord;
-                    const npcChecked = checkForNPC([preMove[0], (preMove[1] - 1)]);
-                    const objChecked = checkForObj([preMove[0], (preMove[1] - 1)]);
-                    if ((npcChecked === false) && (objChecked === 0)) {
-                        setPlayerCoord([preMove[0], (preMove[1] - 1)]);
+                if (playerOrientation === 180) {
+                    console.log("Moving...");
+                    if ((playerCoord[1] > 0) && (playerCoord[1] <= 9)) {
+                        const preMove = playerCoord;
+                        const npcChecked = checkForNPC([preMove[0], (preMove[1] - 1)]);
+                        const objChecked = checkForObj([preMove[0], (preMove[1] - 1)]);
+                        if ((npcChecked === 0) && (objChecked === 0)) {
+                            setPlayerCoord([preMove[0], (preMove[1] - 1)]);
+                        }
                     }
+                } else {
+                    console.log("Turning...");
+                    setPlayerOrientation(180);
+                    console.log("New Player Orientation: " + playerOrientation);
                 }
+                
             }
             if (event.key === 's') {
                 console.log("S key pressed.");
 
-                if ((playerCoord[1] >= 0) && (playerCoord[1] < 9)) {
-                    const preMove = playerCoord;
-                    const npcChecked = checkForNPC([preMove[0], (preMove[1] + 1)]);
-                    const objChecked = checkForObj([preMove[0], (preMove[1] + 1)]);
-
-                    if ((npcChecked === false) && (objChecked === 0)) {
-                        setPlayerCoord([preMove[0], (preMove[1] + 1)]);
-                    }
+                if (playerOrientation === 0) {
+                    console.log("Moving...");
+                    if ((playerCoord[1] >= 0) && (playerCoord[1] < 9)) {
+                        const preMove = playerCoord;
+                        const npcChecked = checkForNPC([preMove[0], (preMove[1] + 1)]);
+                        const objChecked = checkForObj([preMove[0], (preMove[1] + 1)]);
+    
+                        if ((npcChecked === 0) && (objChecked === 0)) {
+                            setPlayerCoord([preMove[0], (preMove[1] + 1)]);
+                        }
+                    } 
+                } else {
+                    console.log("Turning...");
+                    setPlayerOrientation(0);
+                    console.log("New Player Orientation: " + playerOrientation);
                 }
             }
             if (event.key === 'a') {
                 console.log("A key pressed.");
 
-                if ((playerCoord[0] > 0) && (playerCoord[0] <= 9)) {
-                    const preMove = playerCoord;
-                    const npcChecked = checkForNPC([(preMove[0] - 1), (preMove[1])]);
-                    const objChecked = checkForObj([(preMove[0] - 1), (preMove[1])]);
-
-                    if ((npcChecked === false) && (objChecked === 0)) {
-                        setPlayerCoord([(preMove[0] - 1), (preMove[1])]);
+                if (playerOrientation === 90) {
+                    console.log("Moving...");
+                    if ((playerCoord[0] > 0) && (playerCoord[0] <= 9)) {
+                        const preMove = playerCoord;
+                        const npcChecked = checkForNPC([(preMove[0] - 1), (preMove[1])]);
+                        const objChecked = checkForObj([(preMove[0] - 1), (preMove[1])]);
+    
+                        if ((npcChecked === 0) && (objChecked === 0)) {
+                            setPlayerCoord([(preMove[0] - 1), (preMove[1])]);
+                        }
                     }
+                } else {
+                    console.log("Turning...");
+                    setPlayerOrientation(90);
+                    console.log("New Player Orientation: " + playerOrientation);
+
                 }
             }
             if (event.key === 'd') {
                 console.log("D key pressed.");
 
-                if ((playerCoord[0] >= 0) && (playerCoord[0] < 9)) {
-                    const preMove = playerCoord;
-                    const npcChecked = checkForNPC([(preMove[0] + 1), (preMove[1])]);
-                    const objChecked = checkForObj([(preMove[0] + 1), (preMove[1])]);
-
-                    if ((npcChecked === false) && (objChecked === 0)) {
-                        setPlayerCoord([(preMove[0] + 1), (preMove[1])]);
+                if (playerOrientation === 270) {
+                    console.log("Moving...");
+                    if ((playerCoord[0] >= 0) && (playerCoord[0] < 9)) {
+                        const preMove = playerCoord;
+                        const npcChecked = checkForNPC([(preMove[0] + 1), (preMove[1])]);
+                        const objChecked = checkForObj([(preMove[0] + 1), (preMove[1])]);
+    
+                        if ((npcChecked === 0) && (objChecked === 0)) {
+                            setPlayerCoord([(preMove[0] + 1), (preMove[1])]);
+                        }
                     }
+                } else {
+                    console.log("Turning...");
+                    setPlayerOrientation(270);
+                    console.log("New Player Orientation: " + playerOrientation);
+
                 }
             }
         }
         if (event.key === ' ') {
             console.log("Space key pressed.");
-            const adjToNPC = isAdjNPC(playerCoord);
-            const adjToObj = isAdjObj(playerCoord);
+            const coordsToCheck = playerFacing(playerCoord, playerOrientation);
+            const adjToNPC = checkForNPC(coordsToCheck);
+            const adjToObj = checkForObj(coordsToCheck);
             if (adjToNPC !== 0) {
                 const preDialog = isDialog;
                 // Spacebar if is speaking with NPC.
@@ -351,11 +412,12 @@ export function Game(props) {
             // console.log("Moved: [" + playerCoord[0] + ", " + playerCoord[1] + "]");
             // console.log('Dialog: ' + isDialog);
         }
-    }, [playerCoord, isDialog, isObjDesc]);
+    }, [playerCoord, playerOrientation, isDialog, isObjDesc]);
 
     return (
         <Interface 
             playerPos={playerCoord} 
+            playerOri={playerOrientation}
             npcPos={npcMap} 
             objPos={objMap} 
             dialogOn={isDialog} 
