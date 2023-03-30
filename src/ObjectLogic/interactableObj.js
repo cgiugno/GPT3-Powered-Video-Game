@@ -1,4 +1,11 @@
 export class Obj {
+    name;
+    desc;
+    imgURL;
+    objPos;
+    interactable;
+    numTimesToPickUp;
+
     constructor() {
         this.name = "";
         this.desc = "";
@@ -42,6 +49,11 @@ export class Obj {
         return this.interactable;
     }
 
+    pickUp() {
+        var currNumTimesToPickUp = this.numTimesToPickUp;
+        this.numTimesToPickUp = currNumTimesToPickUp - 1;
+    }
+
     setCanPickUp(newCanPickUp) {
         this.numTimesToPickUp = newCanPickUp;
     }
@@ -51,9 +63,16 @@ export class Obj {
 }
 
 export class CompObj {
+    name;
+    desc;
+    subObjs;
+    interactable;
+    numTimesToPickUp;
+
     constructor() {
         this.name = "";
         this.desc = "";
+        this.id = -1;
         this.subObjs = [];
         this.interactable = false;
         this.numTimesToPickUp = 0;

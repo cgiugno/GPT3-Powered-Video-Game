@@ -45,3 +45,9 @@ house.addObjToSub(2, 2, 4); // 8
 house.addObjToSub(12, 3, 4); // 9
 house.addObjToSub(3, 4, 4); // 10
 
+export var mushroom = new Obj();
+mushroom.setName("Mushroom");
+mushroom.setDesc("Describe a small red white-polka-dotted mushroom in whimsical language, using two or less sentences.");
+mushroom.setImgURL(21);
+mushroom.setInteractable(true);
+mushroom.setCanPickUp(2);

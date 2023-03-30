@@ -3,6 +3,7 @@ import { screen, csBox, headerStyle, box } from './style.js';
 import { Tile } from "./tile.js";
 import { Player } from './player.js';
 import { DialogBox } from "./dialogBox.js";
+import { InventoryBox } from './inventoryBox.js';
 import { NPC } from './npc.js';
 import { Object } from './object.js';
 
@@ -112,6 +113,9 @@ const objArray = [
 
     // 20
     beehive,
+
+    // 21
+    shrooms,
 ];
 
 const npcArray = [spiderPlayer, spookyWizardPlayer, ghostPlayer];
@@ -139,6 +143,14 @@ function withinCurrMap(xCoord, yCoord) {
     }
 }
 
+function inventoryToImages(currInventory) {
+    var imgInventory = [];
+    for (var i = 0; i < currInventory.length; i++) {
+        imgInventory.push(objArray[currInventory[i].obj.getImgURL() - 1]);
+    }
+    return imgInventory;
+}
+
 export class Interface extends React.Component {
     constructor(props) {
         super(props);
@@ -160,6 +172,7 @@ export class Interface extends React.Component {
             <div>
                 <h1 style={headerStyle}>A rat pun.</h1>
                 <div style={screen}>
+                    {(this.props.isInventory > 0) && <InventoryBox inventory={this.props.inventory} inventoryBoxSrc={inventoryToImages(this.props.inventory)}/>}
                     {
                         this.state.boardState.map((item, index) => {
                             return <div 
@@ -174,7 +187,7 @@ export class Interface extends React.Component {
                                             style={box} 
                                             key={"child" + index + "." + index2}>
                                             {((index === 1) && (index2 === 2)) && 
-                                                <Player playerSrc={greyRatPlayer} playerOrientation={this.props.playerOri} stopAnim={this.props.dialogOn}/>}
+                                                <Player playerSrc={greyRatPlayer} playerOrientation={this.props.playerOri} stopAnim={(this.props.dialogOn || (this.props.objDescOn !== 0) || this.props.isInventory)}/>}
                                             
                                             {((withinCurrMap(playerY, playerX)) && (this.props.npcPos[playerY][playerX] !== 0)) && 
                                                 <NPC npcSrc = {npcArray[this.props.npcPos[playerY][playerX] - 1] }/>}
@@ -196,7 +209,6 @@ export class Interface extends React.Component {
                                         onDialogClick = { this.props.onDialogClick }/>)
                                 }
                             </div>
-
 
                         })
                     }

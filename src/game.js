@@ -2,7 +2,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { spiderNPC, wizardNPC, ghostNPC } from './dialogTrees.js';
 import { Interface } from "./interface.js";
-import { beeHive, tallGreenTree, smallyellowtree, house } from './ObjectLogic/objsInGame.js';
+import { beeHive, tallGreenTree, smallyellowtree, house, mushroom } from './ObjectLogic/objsInGame.js';
 
 // const configuration = new Configuration({
 //     organization: "org-lCoICPkqEqYQHQq9xT7TXP53",
@@ -31,16 +31,19 @@ const objs = [
     null, // 18                                 // 17
     smallyellowtree, // 19                      // 18
     beeHive, // 20                              // 19
+    mushroom, // 21                             // 20
 ]
 const testing = false;
 
 export function Game(props) {
     const [playerCoord, setPlayerCoord] = useState([4, 7]);
-    const [playerOrientation, setPlayerOrientation] = useState(0);  
+    const [playerOrientation, setPlayerOrientation] = useState(0);
     // 0 = North
     // 90 = East
     // 180 = South
     // 270 = West
+    const [isInventory, setIsInventory] = useState(0);
+    const [playerInventory, setPlayerInventory] = useState([]);
     const [isDialog, setIsDialog] = useState(0);
     const [isObjDesc, setIsObjDesc] = useState(0);
     const [resultDialog, setResultDialog] = useState('');
@@ -61,7 +64,7 @@ export function Game(props) {
         [0, 0, 0, 19, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 7, 8, 10, 9, 0, 0, 0, 0, 0],
-        [0, 4, 5, 5, 6, 0, 0, 0, 0, 0],
+        [0, 4, 5, 5, 6, 0, 0, 0, 21, 0],
         [0, 1, 2, 12, 3, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -73,13 +76,13 @@ export function Game(props) {
     async function getDialog(npcNum) {
         console.log("Conversant: " + npcs[npcNum - 1].getName());
         console.log("Index of Conversation: " + npcs[npcNum - 1].getCurrConv());
-        
+
         if (npcs[npcNum - 1].getCurrConversation().getIndex() !== -1) {
             if (testing) {
                 const currentConveration = npcs[npcNum - 1].getCurrConv();
-                
+
                 setResultDialog(npcs[npcNum - 1].getConversationInd(currentConveration).getCurrentTurnPrompt());
-                
+
                 setDialogChoices(npcs[npcNum - 1].getCurrConversation().getCurrentTurnChoices());
 
             } else {
@@ -156,6 +159,36 @@ export function Game(props) {
         }
     }
 
+    const addItemToInventory = (object) => {
+        console.log("Player Inventory Before Add Item: " + JSON.stringify(playerInventory));
+        var curInv = playerInventory;
+        var countOfObject = 0;
+        var index = 0;
+
+        for (var i = 0; i < curInv.length; i++) {
+            if (object === curInv[i].obj) {
+                countOfObject += curInv[i].count;
+                index = i;
+            }
+        }
+
+        if (countOfObject <= 0) {
+            curInv.push({
+                obj: object,
+                count: countOfObject + 1,
+            });
+            console.log("Current Inventory: " + JSON.stringify(curInv));
+            setPlayerInventory(curInv);
+        } else {
+            console.log("Previous Inventory Item: " + JSON.stringify(curInv[index]));
+            const preCount = curInv[index].count;
+            curInv[index].count = preCount + 1;
+            console.log("Current Inventory: " + JSON.stringify(curInv));
+            setPlayerInventory(curInv);
+        }
+
+    }
+
     const onDialogClick = (dialogChosen) => {
         if (isDialog > -1) {
             const currNPC = npcs[isDialog - 1];
@@ -195,7 +228,7 @@ export function Game(props) {
 
     const playerFacing = (currCoords, currOrientation) => {
         var coordsToCheck = currCoords;
-        switch(currOrientation) {
+        switch (currOrientation) {
             case 0:
                 coordsToCheck = [currCoords[0], currCoords[1] + 1];
                 break;
@@ -293,7 +326,7 @@ export function Game(props) {
                     setPlayerOrientation(180);
                     console.log("New Player Orientation: " + playerOrientation);
                 }
-                
+
             }
             if (event.key === 's') {
                 console.log("S key pressed.");
@@ -304,11 +337,11 @@ export function Game(props) {
                         const preMove = playerCoord;
                         const npcChecked = checkForNPC([preMove[0], (preMove[1] + 1)]);
                         const objChecked = checkForObj([preMove[0], (preMove[1] + 1)]);
-    
+
                         if ((npcChecked === 0) && (objChecked === 0)) {
                             setPlayerCoord([preMove[0], (preMove[1] + 1)]);
                         }
-                    } 
+                    }
                 } else {
                     console.log("Turning...");
                     setPlayerOrientation(0);
@@ -324,7 +357,7 @@ export function Game(props) {
                         const preMove = playerCoord;
                         const npcChecked = checkForNPC([(preMove[0] - 1), (preMove[1])]);
                         const objChecked = checkForObj([(preMove[0] - 1), (preMove[1])]);
-    
+
                         if ((npcChecked === 0) && (objChecked === 0)) {
                             setPlayerCoord([(preMove[0] - 1), (preMove[1])]);
                         }
@@ -345,7 +378,7 @@ export function Game(props) {
                         const preMove = playerCoord;
                         const npcChecked = checkForNPC([(preMove[0] + 1), (preMove[1])]);
                         const objChecked = checkForObj([(preMove[0] + 1), (preMove[1])]);
-    
+
                         if ((npcChecked === 0) && (objChecked === 0)) {
                             setPlayerCoord([(preMove[0] + 1), (preMove[1])]);
                         }
@@ -355,6 +388,22 @@ export function Game(props) {
                     setPlayerOrientation(270);
                     console.log("New Player Orientation: " + playerOrientation);
 
+                }
+            }
+            if (event.key === 'f') {
+                console.log("Object Descriptions? " + isObjDesc);
+                if (isObjDesc === 0) {
+                    console.log("F key pressed.");
+                    console.log("Inventory Value? " + isInventory);
+                    const preInventory = isInventory;
+                    if (preInventory > 0) {
+                        setIsInventory(0);
+                        console.log("New Inventory Value: " + isInventory);
+                    }
+                    else {
+                        setIsInventory(1);
+                        console.log("New Inventory Value: " + isInventory);
+                    }
                 }
             }
         }
@@ -370,12 +419,12 @@ export function Game(props) {
                     setIsDialog(0);
                     setResultDialog('');
                     setDialogChoices(['', '']);
-                // Spacebar if is speaking to NPC.
+                    // Spacebar if is speaking to NPC.
                 } else {
                     const currNPC = npcs[adjToNPC - 1];
                     console.log("NPC: " + currNPC);
                     console.log("Conversation: " + currNPC.getCurrConversation());
-                    
+
                     if (currNPC.getCurrConversation().getFinished() === true) {
                         setIsDialog(adjToNPC);
                         setResultDialog(currNPC.getDefault());
@@ -399,6 +448,14 @@ export function Game(props) {
                     console.log("And again " + isObjDesc);
                     getObjDesc(adjToObj);
                     setDialogChoices(null);
+
+                    if (objs[adjToObj - 1].getCanPickUp() > 0) {
+                        addItemToInventory(objs[adjToObj - 1]);
+                        console.log(playerInventory);
+
+                        objs[adjToObj - 1].pickUp();
+                    }
+
                 }
             }
         }
@@ -412,19 +469,21 @@ export function Game(props) {
             // console.log("Moved: [" + playerCoord[0] + ", " + playerCoord[1] + "]");
             // console.log('Dialog: ' + isDialog);
         }
-    }, [playerCoord, playerOrientation, isDialog, isObjDesc]);
+    }, [playerCoord, playerOrientation, isDialog, isObjDesc, isInventory]);
 
     return (
-        <Interface 
-            playerPos={playerCoord} 
+        <Interface
+            playerPos={playerCoord}
             playerOri={playerOrientation}
-            npcPos={npcMap} 
-            objPos={objMap} 
-            dialogOn={isDialog} 
+            npcPos={npcMap}
+            objPos={objMap}
+            dialogOn={isDialog}
             objDescOn={isObjDesc}
-            result={(resultDialog !== '') ? resultDialog : '...'} 
-            dialogChoices={dialogChoices} 
-            onDialogClick={onDialogClick} 
+            result={(resultDialog !== '') ? resultDialog : '...'}
+            dialogChoices={dialogChoices}
+            onDialogClick={onDialogClick}
+            isInventory={isInventory}
+            inventory={playerInventory}
         />
     );
 }

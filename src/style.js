@@ -56,6 +56,65 @@ export const objectStyle = {
     position: 'absolute',
 }
 
+export const inventoryStyle = {
+    backgroundSize: 'contain',
+    imageRendering: 'pixelated',
+
+    backgroundRepeat: 'no-repeat',
+    height: 800,
+    width: 200,
+    position: 'absolute',
+    zIndex: 60,
+    display: 'flex',
+    flexDirection: 'column',
+}
+
+export const inventoryBoxStyle = {
+    backgroundSize: '120px 120px',
+    imageRendering: 'pixelated',
+    backgroundRepeat: 'no-repeat',
+    height: 120,
+    width: 120,
+    marginLeft: '40px',
+    marginRight: '40px',
+    marginTop: '40px',
+    position: 'relative',
+}
+
+export const inventoryCount = {
+    position: 'absolute',
+    bottom: -10,
+    right: -10,
+    backgroundRepeat: 'no-repeat',
+    imageRendering: 'pixelated',
+    backgroundSize: 'cover',
+    height: 40,
+    width: 40,
+}
+
+export const inventoryCountTextStyle = {
+    fontSize: 40,
+    fontFamily: 'KenneyPixel',
+    margin: 'auto',
+    width: '50%',
+    textAlign: 'center',
+    padding: '2.5px 0px',
+    // marginTop: '2px',
+    // marginLeft: '15px',
+}
+
+export const inventoryTextStyle = {
+    marginLeft: 55,
+    marginRight: 55,
+    marginTop: 20,
+    marginBottom: 20,
+    fontSize: 30,
+    width: 100,
+    height: 100,
+    position: 'absolute',
+    fontFamily: 'KenneyPixel',
+}
+
 export const dialogStyle = {
     backgroundSize: '600px 200px',
     imageRendering: 'pixelated',
