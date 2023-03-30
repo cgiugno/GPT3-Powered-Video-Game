@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "A Rat Pun",
+  "name": "A Rat Pun: GPT3 Simulated Game",
   "icons": [
     {
       "src": "favicon.ico",

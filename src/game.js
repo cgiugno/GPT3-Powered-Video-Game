@@ -305,9 +305,12 @@ export function Game(props) {
 
     const handleKeydown = (event) => {
         console.log(event.key);
-        console.log("Player Orientation? " + playerOrientation);
+        console.log("Player Dialog? " + isDialog);
+        console.log("Player Object Description? " + isObjDesc);
+        console.log("Player Inventory? " + isInventory);
 
-        if (isDialog === 0) {
+
+        if ((isDialog === 0) && (isObjDesc === 0) && (isInventory === 0)) {
             if (event.key === 'w') {
                 console.log("W key pressed.");
 
@@ -390,6 +393,8 @@ export function Game(props) {
 
                 }
             }
+        }
+        if ((isDialog === 0) && (isObjDesc === 0)) {
             if (event.key === 'f') {
                 console.log("Object Descriptions? " + isObjDesc);
                 if (isObjDesc === 0) {
@@ -407,55 +412,57 @@ export function Game(props) {
                 }
             }
         }
-        if (event.key === ' ') {
-            console.log("Space key pressed.");
-            const coordsToCheck = playerFacing(playerCoord, playerOrientation);
-            const adjToNPC = checkForNPC(coordsToCheck);
-            const adjToObj = checkForObj(coordsToCheck);
-            if (adjToNPC !== 0) {
-                const preDialog = isDialog;
-                // Spacebar if is speaking with NPC.
-                if (preDialog !== 0) {
-                    setIsDialog(0);
-                    setResultDialog('');
-                    setDialogChoices(['', '']);
-                    // Spacebar if is speaking to NPC.
-                } else {
-                    const currNPC = npcs[adjToNPC - 1];
-                    console.log("NPC: " + currNPC);
-                    console.log("Conversation: " + currNPC.getCurrConversation());
+        if (isInventory === 0) {
+            if (event.key === ' ') {
+                console.log("Space key pressed.");
+                const coordsToCheck = playerFacing(playerCoord, playerOrientation);
+                const adjToNPC = checkForNPC(coordsToCheck);
+                const adjToObj = checkForObj(coordsToCheck);
+                if (adjToNPC !== 0) {
+                    const preDialog = isDialog;
+                    // Spacebar if is speaking with NPC.
+                    if (preDialog !== 0) {
+                        setIsDialog(0);
+                        setResultDialog('');
+                        setDialogChoices(['', '']);
+                        // Spacebar if is speaking to NPC.
+                    } else {
+                        const currNPC = npcs[adjToNPC - 1];
+                        console.log("NPC: " + currNPC);
+                        console.log("Conversation: " + currNPC.getCurrConversation());
 
-                    if (currNPC.getCurrConversation().getFinished() === true) {
-                        setIsDialog(adjToNPC);
-                        setResultDialog(currNPC.getDefault());
+                        if (currNPC.getCurrConversation().getFinished() === true) {
+                            setIsDialog(adjToNPC);
+                            setResultDialog(currNPC.getDefault());
+                            setDialogChoices(null);
+                        } else {
+                            setIsDialog(adjToNPC);
+                            getDialog(adjToNPC);
+                        }
+                    }
+                } else if (adjToObj !== 0) {
+                    const preObjDesc = isObjDesc;
+                    console.log("Currently speaking with...? " + isObjDesc);
+                    console.log("Am adjacent to... " + adjToObj);
+                    if (preObjDesc !== 0) {
+                        setIsObjDesc(0);
+                        setResultDialog('');
                         setDialogChoices(null);
                     } else {
-                        setIsDialog(adjToNPC);
-                        getDialog(adjToNPC);
+                        console.log("Speaking to Obj.");
+                        setIsObjDesc(adjToObj);
+                        console.log("And again " + isObjDesc);
+                        getObjDesc(adjToObj);
+                        setDialogChoices(null);
+
+                        if (objs[adjToObj - 1].getCanPickUp() > 0) {
+                            addItemToInventory(objs[adjToObj - 1]);
+                            console.log(playerInventory);
+
+                            objs[adjToObj - 1].pickUp();
+                        }
+
                     }
-                }
-            } else if (adjToObj !== 0) {
-                const preObjDesc = isObjDesc;
-                console.log("Currently speaking with...? " + isObjDesc);
-                console.log("Am adjacent to... " + adjToObj);
-                if (preObjDesc !== 0) {
-                    setIsObjDesc(0);
-                    setResultDialog('');
-                    setDialogChoices(null);
-                } else {
-                    console.log("Speaking to Obj.");
-                    setIsObjDesc(adjToObj);
-                    console.log("And again " + isObjDesc);
-                    getObjDesc(adjToObj);
-                    setDialogChoices(null);
-
-                    if (objs[adjToObj - 1].getCanPickUp() > 0) {
-                        addItemToInventory(objs[adjToObj - 1]);
-                        console.log(playerInventory);
-
-                        objs[adjToObj - 1].pickUp();
-                    }
-
                 }
             }
         }

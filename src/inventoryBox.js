@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect, useState } from 'react';
-import { inventoryBoxStyle, inventoryStyle, inventoryCount, inventoryTextStyle, inventoryCountTextStyle } from "./style";
+import { inventoryBoxStyle, inventoryStyle, inventoryCount, inventorySelected, inventoryTextStyle, inventoryCountTextStyle } from "./style";
 
 import greenBox from "./uipack_fixed/PNG/green_button02.5.png";
 import countBackground from "./uipack_fixed/PNG/green_circle.png";
@@ -14,6 +14,7 @@ export function InventoryBox(props) {
     console.log("Inventory: " + JSON.stringify(props.inventory));
     console.log(props.inventoryBoxSrc[0]);
 
+
     return <div>
         <div style={Object.assign({ backgroundImage: `url(${greenBox})` }, inventoryStyle)}>
             <h2 style={Object.assign({ color: dialogTextColor }, inventoryTextStyle)}>Inventory</h2>
@@ -21,7 +22,13 @@ export function InventoryBox(props) {
 
                 props.inventory.slice(ind, ind + 3).map((item, index) => {
                     console.log("map " + index);
-                    return <div key={"inventory " + index} style={Object.assign({ backgroundImage: `url(${props.inventoryBoxSrc[index]})` }, inventoryBoxStyle)}>
+                    var styleSelected;
+                    // if (index == ind) {
+                    //     styleSelected = Object.assign({borderColor: dialogTextColor}, inventorySelected, { backgroundImage: `url(${props.inventoryBoxSrc[index]})` }, inventoryBoxStyle);
+                    // } else {
+                        styleSelected = Object.assign({ backgroundImage: `url(${props.inventoryBoxSrc[index]})` }, inventoryBoxStyle);
+                    // }
+                    return <div key={"inventory " + index} style={styleSelected}>
                         <div style={Object.assign({ backgroundImage: `url(${countBackground})` }, inventoryCount)}>
                             <h2 style={Object.assign({ color: dialogTextColor }, inventoryCountTextStyle)}>{props.inventory[index].count}</h2>
                         </div>

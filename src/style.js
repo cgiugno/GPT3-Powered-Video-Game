@@ -81,6 +81,12 @@ export const inventoryBoxStyle = {
     position: 'relative',
 }
 
+export const inventorySelected = {
+    borderStyle: 'solid', 
+    borderWidth: '5px', 
+    borderRadius: '5px'
+}
+
 export const inventoryCount = {
     position: 'absolute',
     bottom: -10,
@@ -88,6 +94,7 @@ export const inventoryCount = {
     backgroundRepeat: 'no-repeat',
     imageRendering: 'pixelated',
     backgroundSize: 'cover',
+    zIndex: 70,
     height: 40,
     width: 40,
 }
