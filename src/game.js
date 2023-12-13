@@ -1,77 +1,40 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { spiderNPC, wizardNPC, ghostNPC } from './dialogTrees.js';
+import { spiderNPC, wizardNPC, ghostNPC, witchNPC } from './dialogTrees.js';
 import { Interface } from "./interface.js";
-import { beeHive, tallGreenTree, smallyellowtree, house, mushroom } from './ObjectLogic/objsInGame.js';
+import { outsideMap, houseMap } from './gameMap.js';
+// import {Configuration, OpenAIApi} from "openai";
 
-// const configuration = new Configuration({
-//     organization: "org-lCoICPkqEqYQHQq9xT7TXP53",
-//     apiKey: process.env.REACT_APP_API_KEY,
-// });
-
-const npcs = [spiderNPC, wizardNPC, ghostNPC];
-const objs = [
-    house.getObjFromSub(7), // 1                // 0
-    house.getObjFromSub(8),  // 2               // 1 
-    house.getObjFromSub(10), // 3               // 2
-    house.getObjFromSub(4), // 4                // 3
-    house.getObjFromSub(5), // 5                // 4
-    house.getObjFromSub(6), // 6                // 5
-    house.getObjFromSub(0), // 7                // 6
-    house.getObjFromSub(1), // 8                // 7
-    house.getObjFromSub(3), // 9                // 8
-    house.getObjFromSub(2), // 10               // 9
-    null, // 11                                 // 10
-    house.getObjFromSub(9), //12                // 11
-    null, // 13                                 // 12
-    tallGreenTree.getObjFromSub(0), // 14       // 13
-    tallGreenTree.getObjFromSub(1), // 15       // 14
-    null, // 16                                 // 15
-    null, // 17                                 // 16
-    null, // 18                                 // 17
-    smallyellowtree, // 19                      // 18
-    beeHive, // 20                              // 19
-    mushroom, // 21                             // 20
-]
+const currGameMap = outsideMap;
+const npcs = [spiderNPC, wizardNPC, ghostNPC, witchNPC];
 const testing = false;
 
 export function Game(props) {
-    const [playerCoord, setPlayerCoord] = useState([4, 7]);
-    const [playerOrientation, setPlayerOrientation] = useState(0);
+    // Coordinates of Player in Current Map.
+    const [playerCoord, setPlayerCoord] = useState([4, 7]); // [4, 7]
+    // Orientation of Player (in degrees) in Current Map.
     // 0 = North
     // 90 = East
     // 180 = South
     // 270 = West
+    const [playerOrientation, setPlayerOrientation] = useState(0);
+    
+    // True if Player Inventory is Open
     const [isInventory, setIsInventory] = useState(0);
+    // Items in Player Inventory.
     const [playerInventory, setPlayerInventory] = useState([]);
+
+    // True if Player is Conversing with an NPC or Examining an Object.
     const [isDialog, setIsDialog] = useState(0);
+    // Object Description from GPT-3.
     const [isObjDesc, setIsObjDesc] = useState(0);
+    // NPC Dialog from GPT-3.
     const [resultDialog, setResultDialog] = useState('');
+    // Choices for Given NPC Dialog.
     const [dialogChoices, setDialogChoices] = useState([]);
-    const [npcMap, setNpcMap] = useState([
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 2, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 3, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ]);
-    const [objMap, setObjMap] = useState([
-        [0, 0, 0, 19, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 7, 8, 10, 9, 0, 0, 0, 0, 0],
-        [0, 4, 5, 5, 6, 0, 0, 0, 21, 0],
-        [0, 1, 2, 12, 3, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 14, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 15, 20],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ]);
+
+    // Current Game Map
+    const [currMap, setCurrMap] = useState(currGameMap);
 
     async function getDialog(npcNum) {
         console.log("Conversant: " + npcs[npcNum - 1].getName());
@@ -80,9 +43,7 @@ export function Game(props) {
         if (npcs[npcNum - 1].getCurrConversation().getIndex() !== -1) {
             if (testing) {
                 const currentConveration = npcs[npcNum - 1].getCurrConv();
-
                 setResultDialog(npcs[npcNum - 1].getConversationInd(currentConveration).getCurrentTurnPrompt());
-
                 setDialogChoices(npcs[npcNum - 1].getCurrConversation().getCurrentTurnChoices());
 
             } else {
@@ -99,16 +60,33 @@ export function Game(props) {
                         body: JSON.stringify({
                             'model': 'text-davinci-003',
                             'temperature': 0.7,
-                            'max_tokens': 50,
+                            'max_tokens': 40,
                             'prompt': testPrompt,
                         })
                     };
                     const response = await fetch('https://api.openai.com/v1/completions', dialogRequest);
+
+                    
+
+                    // const configuration = new Configuration({
+                    //     apiKey: process.env.REACT_APP_API_KEY,
+                    // });
+
+                    // const openai = new OpenAIApi(configuration);
+
+                    // const chatCompletion = await openai.createChatCompletion({
+                    //     messages: [{ role: "video game NPC", content: testPrompt }],
+                    // model: "gpt-3.5-turbo",
+                    // });
+
+                    
+
                     const data = await response.json();
                     console.log(data);
                     setResultDialog(data.choices[0].text);
                     console.log("Choices: " + currNPC.getCurrConversation().getCurrentTurnChoices());
                     setDialogChoices(currNPC.getCurrConversation().getCurrentTurnChoices());
+
                 } catch (error) {
                     console.log("ERROR OCCURRED!");
                     console.error(error);
@@ -123,14 +101,15 @@ export function Game(props) {
     }
 
     async function getObjDesc(objNum) {
+        const obj = currMap.getObjList()[objNum - 1];
         console.log("Object Index: " + (objNum - 1));
-        console.log("Object: " + objs[objNum - 1]);
-        console.log("Object Name: " + objs[objNum - 1].getName());
+        console.log("Object: " + obj);
+        console.log("Object Name: " + obj.getName());
         if (testing) {
-            setResultDialog(objs[objNum - 1].getDesc());
+            setResultDialog(obj.getDesc());
             setDialogChoices(null)
         } else {
-            const currObj = objs[objNum - 1];
+            const currObj = obj;
             const objPrompt = currObj.getDesc()
             try {
                 const dialogRequest = {
@@ -142,7 +121,7 @@ export function Game(props) {
                     body: JSON.stringify({
                         'model': 'text-davinci-003',
                         'temperature': 0.7,
-                        'max_tokens': 50,
+                        'max_tokens': 40,
                         'prompt': objPrompt,
                     })
                 };
@@ -189,6 +168,18 @@ export function Game(props) {
 
     }
 
+    const changeMap = (mapIndToChange) => {
+        // console.log("Map List? " + JSON.stringify(currMap.getConnectedMapList()));
+
+        var newMap = currMap.getConnectedMapList()[mapIndToChange - 1];
+
+        // console.log("New Map? " + JSON.stringify(newMap));
+
+        setPlayerCoord(newMap.getPlayerPos());
+        setPlayerOrientation(0);
+        setCurrMap(newMap);
+    }
+
     const onDialogClick = (dialogChosen) => {
         if (isDialog > -1) {
             const currNPC = npcs[isDialog - 1];
@@ -204,27 +195,6 @@ export function Game(props) {
     }
 
 
-    // async function getDialog(npcNum) {
-    //     try {
-    //         const response = await fetch("./dialogFetch.js", {
-    //             method: "POST",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //             body: JSON.stringify({ npcPrompt: npcPrompts[0]}),
-    //         });
-    //         // const data = await response.json();
-    //         // if (response.status !== 200) {
-    //         //     throw data.error || new Error(`Request failed with status ${response.status}`);
-    //         // }
-
-    //         // setResultDialog(data.result);
-    //     } catch(error) {
-    //         console.log("ERROR OCCURED!");
-    //         console.error(error);
-    //         alert(error.message);
-    //     }
-    // }
 
     const playerFacing = (currCoords, currOrientation) => {
         var coordsToCheck = currCoords;
@@ -250,9 +220,7 @@ export function Game(props) {
         var npcInMovePos = 0;
         // console.log(coordsToCheck[0]);
         // console.log(coordsToCheck[1]);
-        // console.log(npcMap);
-
-        console.log("Coordinate: " + npcMap[coordsToCheck[1]][coordsToCheck[0]])
+        const npcMap = currMap.getNPCMap();
 
         if (npcMap[coordsToCheck[1]][coordsToCheck[0]] !== 0) {
             npcInMovePos = npcMap[coordsToCheck[1]][coordsToCheck[0]];
@@ -264,44 +232,28 @@ export function Game(props) {
         var objInMovePos = 0;
         // console.log(coordsToCheck[0]);
         // console.log(coordsToCheck[1]);
-        // console.log(npcMap);
+        const objMap = currMap.getObjMap();
+
         const objCoord = objMap[coordsToCheck[1]][coordsToCheck[0]];
         console.log("Coordinate: " + objMap[coordsToCheck[1]][coordsToCheck[0]])
-        console.log("Object: " + JSON.stringify(objs[objCoord - 1]));
-        if ((objCoord !== 0) && (objs[objCoord - 1].getInteractable() === true)) {
+        console.log("Object: " + JSON.stringify(currMap.getObjList()[objCoord - 1]));
+        if ((objCoord !== 0) && (currMap.getObjList()[objCoord - 1].getInteractable() === true)) {
             objInMovePos = objMap[coordsToCheck[1]][coordsToCheck[0]];
         }
         return objInMovePos;
     }
 
-    const isAdjNPC = (coordsToCheck) => {
-        var adjNPC = 0;
-        if ((coordsToCheck[1] + 1 <= 9) && (npcMap[coordsToCheck[1] + 1][coordsToCheck[0]] !== 0)) {
-            adjNPC = npcMap[coordsToCheck[1] + 1][coordsToCheck[0]];
-        } else if ((coordsToCheck[1] - 1 >= 0) && (npcMap[coordsToCheck[1] - 1][coordsToCheck[0]] !== 0)) {
-            adjNPC = npcMap[coordsToCheck[1] - 1][coordsToCheck[0]];
-        } else if ((coordsToCheck[0] + 1 <= 9) && (npcMap[coordsToCheck[1]][coordsToCheck[0] + 1] !== 0)) {
-            adjNPC = npcMap[coordsToCheck[1]][coordsToCheck[0] + 1];
-        } else if ((coordsToCheck[0] - 1 >= 0) && (npcMap[coordsToCheck[1]][coordsToCheck[0] - 1] !== 0)) {
-            adjNPC = npcMap[coordsToCheck[1]][coordsToCheck[0] - 1];
+    const checkForMap = (coordsToCheck) => {
+        var mapInMovePos = 0;
+        const mapMap = currMap.getConnectedMapMap();
+
+        if (mapMap[coordsToCheck[1]][coordsToCheck[0]] !== 0) {
+            mapInMovePos = mapMap[coordsToCheck[1]][coordsToCheck[0]];
         }
-        return adjNPC;
+
+        return mapInMovePos;
     }
 
-    const isAdjObj = (coordsToCheck) => {
-        var adjObj = 0;
-        if ((coordsToCheck[1] + 1 <= 9) && (objMap[coordsToCheck[1] + 1][coordsToCheck[0]] !== 0)) {
-            adjObj = objMap[coordsToCheck[1] + 1][coordsToCheck[0]];
-        } else if ((coordsToCheck[1] - 1 >= 0) && (objMap[coordsToCheck[1] - 1][coordsToCheck[0]] !== 0)) {
-            adjObj = objMap[coordsToCheck[1] - 1][coordsToCheck[0]];
-        } else if ((coordsToCheck[0] + 1 <= 9) && (objMap[coordsToCheck[1]][coordsToCheck[0] + 1] !== 0)) {
-            adjObj = objMap[coordsToCheck[1]][coordsToCheck[0] + 1];
-        } else if ((coordsToCheck[0] - 1 >= 0) && (objMap[coordsToCheck[1]][coordsToCheck[0] - 1] !== 0)) {
-            adjObj = objMap[coordsToCheck[1]][coordsToCheck[0] - 1];
-        }
-        console.log("Adjacent to Object? " + adjObj);
-        return adjObj;
-    }
 
     const handleKeydown = (event) => {
         console.log(event.key);
@@ -316,11 +268,15 @@ export function Game(props) {
 
                 if (playerOrientation === 180) {
                     console.log("Moving...");
-                    if ((playerCoord[1] > 0) && (playerCoord[1] <= 9)) {
+                    if ((playerCoord[1] > 0) && (playerCoord[1] <= (currMap.getDims()[1] - 1))) {
                         const preMove = playerCoord;
                         const npcChecked = checkForNPC([preMove[0], (preMove[1] - 1)]);
                         const objChecked = checkForObj([preMove[0], (preMove[1] - 1)]);
-                        if ((npcChecked === 0) && (objChecked === 0)) {
+                        const mapChecked = checkForMap([preMove[0], (preMove[1] - 1)]);
+                        if (mapChecked !== 0) {
+                            changeMap(mapChecked);
+                        }
+                        else if ((npcChecked === 0) && (objChecked === 0)) {
                             setPlayerCoord([preMove[0], (preMove[1] - 1)]);
                         }
                     }
@@ -336,12 +292,15 @@ export function Game(props) {
 
                 if (playerOrientation === 0) {
                     console.log("Moving...");
-                    if ((playerCoord[1] >= 0) && (playerCoord[1] < 9)) {
+                    if ((playerCoord[1] >= 0) && (playerCoord[1] < (currMap.getDims()[1] - 1))) {
                         const preMove = playerCoord;
                         const npcChecked = checkForNPC([preMove[0], (preMove[1] + 1)]);
                         const objChecked = checkForObj([preMove[0], (preMove[1] + 1)]);
-
-                        if ((npcChecked === 0) && (objChecked === 0)) {
+                        const mapChecked = checkForMap([preMove[0], (preMove[1] + 1)]);
+                        if (mapChecked !== 0) {
+                            changeMap(mapChecked);
+                        }
+                        else if ((npcChecked === 0) && (objChecked === 0)) {
                             setPlayerCoord([preMove[0], (preMove[1] + 1)]);
                         }
                     }
@@ -356,12 +315,15 @@ export function Game(props) {
 
                 if (playerOrientation === 90) {
                     console.log("Moving...");
-                    if ((playerCoord[0] > 0) && (playerCoord[0] <= 9)) {
+                    if ((playerCoord[0] > 0) && (playerCoord[0] <= (currMap.getDims()[0] - 1))) {
                         const preMove = playerCoord;
                         const npcChecked = checkForNPC([(preMove[0] - 1), (preMove[1])]);
                         const objChecked = checkForObj([(preMove[0] - 1), (preMove[1])]);
-
-                        if ((npcChecked === 0) && (objChecked === 0)) {
+                        const mapChecked = checkForMap([(preMove[0] - 1), (preMove[1])]);
+                        if (mapChecked !== 0) {
+                            changeMap(mapChecked);
+                        }
+                        else if ((npcChecked === 0) && (objChecked === 0)) {
                             setPlayerCoord([(preMove[0] - 1), (preMove[1])]);
                         }
                     }
@@ -377,11 +339,14 @@ export function Game(props) {
 
                 if (playerOrientation === 270) {
                     console.log("Moving...");
-                    if ((playerCoord[0] >= 0) && (playerCoord[0] < 9)) {
+                    if ((playerCoord[0] >= 0) && (playerCoord[0] < (currMap.getDims()[0] - 1))) {
                         const preMove = playerCoord;
                         const npcChecked = checkForNPC([(preMove[0] + 1), (preMove[1])]);
                         const objChecked = checkForObj([(preMove[0] + 1), (preMove[1])]);
-
+                        const mapChecked = checkForMap([(preMove[0] + 1), (preMove[1])]);
+                        if (mapChecked !== 0) {
+                            changeMap(mapChecked);
+                        }
                         if ((npcChecked === 0) && (objChecked === 0)) {
                             setPlayerCoord([(preMove[0] + 1), (preMove[1])]);
                         }
@@ -455,11 +420,11 @@ export function Game(props) {
                         getObjDesc(adjToObj);
                         setDialogChoices(null);
 
-                        if (objs[adjToObj - 1].getCanPickUp() > 0) {
-                            addItemToInventory(objs[adjToObj - 1]);
+                        if (currMap.getObjList()[adjToObj - 1].getCanPickUp() > 0) {
+                            addItemToInventory(currMap.getObjList()[adjToObj - 1]);
                             console.log(playerInventory);
 
-                            objs[adjToObj - 1].pickUp();
+                            currMap.getObjList()[adjToObj - 1].pickUp();
                         }
 
                     }
@@ -476,14 +441,13 @@ export function Game(props) {
             // console.log("Moved: [" + playerCoord[0] + ", " + playerCoord[1] + "]");
             // console.log('Dialog: ' + isDialog);
         }
-    }, [playerCoord, playerOrientation, isDialog, isObjDesc, isInventory]);
+    }, [playerCoord, playerOrientation, isDialog, isObjDesc, isInventory, currMap]);
 
     return (
         <Interface
             playerPos={playerCoord}
             playerOri={playerOrientation}
-            npcPos={npcMap}
-            objPos={objMap}
+            currMap={currMap}
             dialogOn={isDialog}
             objDescOn={isObjDesc}
             result={(resultDialog !== '') ? resultDialog : '...'}

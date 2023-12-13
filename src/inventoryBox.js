@@ -12,7 +12,6 @@ export function InventoryBox(props) {
     const [ind, setInd] = useState(0);
 
     console.log("Inventory: " + JSON.stringify(props.inventory));
-    console.log(props.inventoryBoxSrc[0]);
 
 
     return <div>
@@ -26,7 +25,8 @@ export function InventoryBox(props) {
                     // if (index == ind) {
                     //     styleSelected = Object.assign({borderColor: dialogTextColor}, inventorySelected, { backgroundImage: `url(${props.inventoryBoxSrc[index]})` }, inventoryBoxStyle);
                     // } else {
-                        styleSelected = Object.assign({ backgroundImage: `url(${props.inventoryBoxSrc[index]})` }, inventoryBoxStyle);
+                        console.log("Inventory? " + JSON.stringify(props.inventory[index]));
+                        styleSelected = Object.assign({ backgroundImage: `url(${props.inventory[index].obj.getImgURL()})` }, inventoryBoxStyle);
                     // }
                     return <div key={"inventory " + index} style={styleSelected}>
                         <div style={Object.assign({ backgroundImage: `url(${countBackground})` }, inventoryCount)}>

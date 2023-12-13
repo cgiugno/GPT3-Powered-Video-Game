@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/static/css/main.9b759594.css",
-    "main.js": "/static/js/main.fd6b1c08.js",
+    "main.js": "/static/js/main.d6ab58bf.js",
     "static/media/Kenney Future Narrow.ttf": "/static/media/Kenney Future Narrow.2aa39d70951453c74a55.ttf",
     "static/media/KenneyPixel.ttf": "/static/media/KenneyPixel.a0dbf5218baea7664079.ttf",
     "static/media/Kenney High Square.ttf": "/static/media/Kenney High Square.a6892dd7ab6f5ad7fb33.ttf",
     "index.html": "/index.html",
     "main.9b759594.css.map": "/static/css/main.9b759594.css.map",
-    "main.fd6b1c08.js.map": "/static/js/main.fd6b1c08.js.map"
+    "main.d6ab58bf.js.map": "/static/js/main.d6ab58bf.js.map"
   },
   "entrypoints": [
     "static/css/main.9b759594.css",
-    "static/js/main.fd6b1c08.js"
+    "static/js/main.d6ab58bf.js"
   ]
 }

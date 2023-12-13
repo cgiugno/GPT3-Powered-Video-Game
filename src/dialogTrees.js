@@ -215,3 +215,36 @@ ghostHello.addTurn('Paraphrase \'You are now in a town called \'Tailwind\'.\' in
 ghostHello.addTurn('Paraphrase \'I am a ghost that haunts the house on the north side of town\'.\' in a whimsical fashion reminiscent of Lewis Carroll\'s Alice in Wonderland.', 'Oh...Well, good to meet you then.', -1, [], [true], "", -1, [], [true]);
 
 ghostNPC.addConversation(ghostHello);
+
+export var witchNPC = new SpecNPC();
+witchNPC.setName("Lizartha");
+witchNPC.setDesc("Pretend you are a grouchy old witch who already turned the person talking to you into a rat just to be mean. You are annoyed that they are talking to you and want them out of your house. However, you also speak with a Midwestern accent.");
+witchNPC.setDefault("Git out of my house now, git!");
+witchNPC.setConds([false]);
+
+export var firstWitchEncounter = new Conv();
+firstWitchEncounter.setIndex(0);
+firstWitchEncounter.addTurn(
+    "Yell for someone to get out of your house in a Midwestern accent.",
+    "Squeak squeak (Yikes!)",
+    1,
+    [],
+    [false],
+    "Squeak! (Turn me back!)",
+    1,
+    [],
+    [true],
+);
+firstWitchEncounter.addTurn(
+    "Pretend to threaten to turn the person you're talking to into something worse than a rat if they don't leave your house, in a Midwestern accent.",
+    "Squeak... (Guess I should go)",
+    -1,
+    [],
+    [],
+    "",
+    -1,
+    [],
+    [],
+)
+
+witchNPC.addConversation(firstWitchEncounter);

@@ -1,3 +1,5 @@
+import blackTile from '../kenney_tinytown/Tiles/tile_0133.png';
+
 export class Obj {
     name;
     desc;
@@ -9,7 +11,7 @@ export class Obj {
     constructor() {
         this.name = "";
         this.desc = "";
-        this.imgURL = 0;
+        this.imgURL = blackTile;
         this.objPos = [];
         this.interactable = false;
         this.numTimesToPickUp = 0;
