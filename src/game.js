@@ -51,6 +51,33 @@ export function Game(props) {
                 const currNPC = npcs[npcNum - 1];
                 const testPrompt = currNPC.getDesc() + currNPC.getCurrConversation().getCurrentTurnPrompt();
                 try {
+                    // const openai = new OpenAI({
+                    //     apiKey: process.env.OPENAI_API_KEY,
+                    // });
+
+                    // const chatCompletion = await openai.chat.completions.create({
+                    //     messages: [{ role: "video game NPC", content: testPrompt }],
+                    // model: "gpt-3.5-turbo",
+                    // });
+
+
+                    
+                    // const dialogRequest = {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //         'Authorization': 'Bearer ' + String(process.env.REACT_APP_API_KEY),
+                    //     },
+                    //     body: JSON.stringify({
+                    //         'model': 'text-curie-001',
+                    //         'temperature': 0.7,
+                    //         'max_tokens': 50,
+                    //         'prompt': testPrompt,
+                    //     })
+                    // };
+                    // const response = await fetch('https://api.openai.com/v1/completions', dialogRequest);
+                    // const response = chatCompletion;
+
                     const dialogRequest = {
                         method: 'POST',
                         headers: {
@@ -65,22 +92,6 @@ export function Game(props) {
                         })
                     };
                     const response = await fetch('https://api.openai.com/v1/completions', dialogRequest);
-
-                    
-
-                    // const configuration = new Configuration({
-                    //     apiKey: process.env.REACT_APP_API_KEY,
-                    // });
-
-                    // const openai = new OpenAIApi(configuration);
-
-                    // const chatCompletion = await openai.createChatCompletion({
-                    //     messages: [{ role: "video game NPC", content: testPrompt }],
-                    // model: "gpt-3.5-turbo",
-                    // });
-
-                    
-
                     const data = await response.json();
                     console.log(data);
                     setResultDialog(data.choices[0].text);
